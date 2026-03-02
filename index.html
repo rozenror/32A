@@ -123,44 +123,46 @@ td{
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbxtgsm4rySSzLxjpaTV79ERXkqPYMJG6h8LiGNsL2QF6tHwjmu_jwWeLES76hV1YRNY/exec";
 
-const apartments = [
-"A1","A2","A3","A4","A5","A6","A7","A8","A9","A10"
-];
-
 const select = document.getElementById("apartmentSelect");
 const saldoEl = document.getElementById("saldo");
 const tableBody = document.getElementById("tableBody");
 
-apartments.forEach(a=>{
-  const opt = document.createElement("option");
-  opt.value = a;
-  opt.textContent = a;
-  select.appendChild(opt);
-});
+/* ===== ЗАРЕЖДА АПАРТАМЕНТИТЕ ===== */
+async function loadApartments(){
 
+  const res = await fetch(API_URL + "?list=apartments");
+  const list = await res.json();
+
+  list.forEach(a=>{
+    const opt = document.createElement("option");
+    opt.value = a;
+    opt.textContent = a;
+    select.appendChild(opt);
+  });
+}
+
+loadApartments();
+
+/* ===== ПРИ ИЗБОР ===== */
 select.addEventListener("change", ()=>{
   if(select.value){
     loadData(select.value);
   }
 });
 
+/* ===== ЗАРЕЖДА ДАННИ ===== */
 async function loadData(apartment){
 
-  try{
-    const res = await fetch(API_URL + "?apartment=" + apartment);
-    const data = await res.json();
+  const res = await fetch(API_URL + "?apartment=" + apartment);
+  const data = await res.json();
 
-    render(data);
-
-  }catch(err){
-    console.error(err);
-  }
+  render(data);
 }
 
+/* ===== РЕНДЕР ===== */
 function render(data){
 
   tableBody.innerHTML = "";
-
   saldoEl.textContent = Number(data.saldo || 0).toFixed(2) + " €";
 
   (data.periods || []).forEach(r=>{
