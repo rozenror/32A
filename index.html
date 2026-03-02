@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Етажна собственост</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin:0;
+  padding:16px;
+  background:#f4f6f9;
+}
+
+h2 { margin-bottom:10px; }
+
+.controls {
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+select, button, input {
+  padding:12px;
+  font-size:16px;
+}
+
+button {
+  background:#2f6fe0;
+  color:white;
+  border:none;
+  border-radius:6px;
+}
+
+.saldo {
+  font-size:20px;
+  margin:20px 0;
+  font-weight:bold;
+}
+
+.table-wrapper {
+  overflow-x:auto;
+  background:white;
+  border-radius:8px;
+}
+
+table {
+  width:100%;
+  border-collapse:collapse;
+}
+
+th,td {
+  padding:10px;
+  border-bottom:1px solid #eee;
+  text-align:center;
+}
+
+th { background:#f0f2f5; }
+
+.admin-box {
+  margin-top:30px;
+  padding:15px;
+  background:white;
+  border-radius:8px;
+}
+
+.hidden { display:none; }
+</style>
+</head>
+
+<body>
+
+<h2>Етажна собственост</h2>
+
+<div class="controls">
+
+<select id="apartmentSelect">
+  <option value="">Избери апартамент</option>
+  <option>A1</option><option>A2</option><option>A3</option>
+  <option>A4</option><option>A5</option><option>A6</option>
+  <option>A7</option><option>A8</option><option>A9</option>
+  <option>A10</option><option>A11</option><option>A12</option>
+  <option>A13</option><option>A14</option><option>A15</option>
+</select>
+
+<button onclick="loadData()">Покажи</button>
+
+<button onclick="toggleAdmin()">Админ</button>
+
+</div>
+
+<div class="saldo" id="saldo"></div>
+
+<div class="table-wrapper">
+<table>
+<thead>
+<tr>
+<th>Период</th>
+<th>Асансьор</th>
+<th>Абонамент</th>
+<th>Осветление</th>
+<th>Дължимо</th>
+</tr>
+</thead>
+<tbody id="tableBody"></tbody>
+</table>
+</div>
+
+<div class="admin-box hidden" id="adminBox">
+<h3>Админ панел</h3>
+
+<div id="adminStatus"></div>
+
+<select id="adminApt">
+<option>A1</option><option>A2</option><option>A3</option>
+<option>A4</option><option>A5</option><option>A6</option>
+<option>A7</option><option>A8</option><option>A9</option>
+<option>A10</option><option>A11</option><option>A12</option>
+<option>A13</option><option>A14</option><option>A15</option>
+</select>
+
+<input type="number" id="adminAmount" placeholder="Сума">
+
+<button onclick="addPayment()">Добави плащане</button>
+
+</div>
+
+<script>
+
+const API_URL = "ТУК_СЛОЖИ_ТВОЯ_EXEC_URL";
+
+/***********************
+ LOAD DATA
+***********************/
+async function loadData(){
+
+  const apt = document.getElementById("apartmentSelect").value;
+  if(!apt) return;
+
+  const res = await fetch(API_URL + "?action=getApartment&apartment=" + apt);
+  const data = await res.json();
+
+  document.getElementById("saldo").innerHTML =
+    "Текущо салдо: " + Number(data.saldo).toFixed(2) + " €";
+
+  let html = "";
+
+  data.rows.forEach(r=>{
+    html += "<tr>";
+    html += "<td>"+r.period+"</td>";
+    html += "<td>"+r.elevator+"</td>";
+    html += "<td>"+r.subscription+"</td>";
+    html += "<td>"+r.lighting+"</td>";
+    html += "<td>"+r.due+"</td>";
+    html += "</tr>";
+  });
+
+  document.getElementById("tableBody").innerHTML = html;
+}
+
+/***********************
+ ADMIN
+***********************/
+async function toggleAdmin(){
+
+  const res = await fetch(API_URL + "?action=checkAdmin");
+  const isAdmin = await res.json();
+
+  if(isAdmin){
+    document.getElementById("adminBox").classList.remove("hidden");
+    document.getElementById("adminStatus").innerHTML =
+      "<b>Админ режим активен</b>";
+  } else {
+    alert("Трябва да сте логнат с админ Google акаунта.");
+  }
+}
+
+async function addPayment(){
+
+  const apt = document.getElementById("adminApt").value;
+  const amount = document.getElementById("adminAmount").value;
+
+  const res = await fetch(API_URL +
+    "?action=addPayment&apartment=" + apt +
+    "&amount=" + amount);
+
+  const data = await res.json();
+
+  if(data.status === "OK"){
+    alert("Плащането е добавено");
+    loadData();
+  } else {
+    alert("Нямате права");
+  }
+}
+
+</script>
+
+</body>
+</html>
