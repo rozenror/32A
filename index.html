@@ -149,7 +149,6 @@
       }
     }
 
-    /* ===== FADE IN ===== */
     .fade-in {
       animation: fadeIn 0.35s ease-out;
     }
@@ -165,6 +164,216 @@
         transform: translateY(0);
       }
     }
+
+    /* ===== ADMIN OVERLAY ===== */
+    .admin-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 200;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .admin-overlay.active {
+      display: flex;
+    }
+
+    .admin-card {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+      padding: 28px 24px;
+      width: 100%;
+      max-width: 400px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      animation: adminSlideIn 0.3s ease-out;
+    }
+
+    @keyframes adminSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.97);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .admin-close {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      background: none;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+      color: #999;
+      line-height: 1;
+      padding: 4px;
+    }
+
+    .admin-close:hover {
+      color: #333;
+    }
+
+    .admin-icon {
+      text-align: center;
+      font-size: 40px;
+      margin-bottom: 8px;
+    }
+
+    .admin-title {
+      font-size: 22px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 6px;
+      color: #1a1a2e;
+    }
+
+    .admin-subtitle {
+      text-align: center;
+      color: #777;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .admin-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 5px;
+      margin-top: 14px;
+    }
+
+    .admin-input {
+      width: 100%;
+      padding: 11px 14px;
+      font-size: 15px;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.2s;
+      box-sizing: border-box;
+      background: #fafbfc;
+    }
+
+    .admin-input:focus {
+      border-color: #3b6edc;
+      background: #fff;
+    }
+
+    .admin-btn {
+      width: 100%;
+      padding: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 16px;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .admin-btn:active {
+      transform: scale(0.98);
+    }
+
+    .admin-btn.primary {
+      background: #3b6edc;
+      color: white;
+    }
+
+    .admin-btn.primary:hover {
+      background: #2f5bb8;
+    }
+
+    .admin-btn.secondary {
+      background: #2e9e4f;
+      color: white;
+    }
+
+    .admin-btn.secondary:hover {
+      background: #258a42;
+    }
+
+    .admin-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .admin-divider {
+      height: 1px;
+      background: #e8e8e8;
+      margin: 24px 0;
+    }
+
+    .admin-section h3 {
+      font-size: 16px;
+      margin: 0 0 4px 0;
+      color: #1a1a2e;
+    }
+
+    .admin-error {
+      color: #d32f2f;
+      font-size: 13px;
+      margin-top: 8px;
+      text-align: center;
+      min-height: 18px;
+    }
+
+    .admin-current {
+      margin-top: 10px;
+      padding: 9px 12px;
+      background: #f0f4ff;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #444;
+    }
+
+    .admin-current span {
+      font-weight: 600;
+      color: #3b6edc;
+    }
+
+    /* ===== TOAST ===== */
+    .toast {
+      position: fixed;
+      bottom: -80px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      color: white;
+      z-index: 300;
+      transition: bottom 0.35s ease;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      bottom: 30px;
+    }
+
+    .toast.success {
+      background: #2e9e4f;
+    }
+
+    .toast.error {
+      background: #d32f2f;
+    }
   </style>
 </head>
 
@@ -175,6 +384,70 @@
     <div class="spinner"></div>
     <div class="loading-text">Зареждане на данни...</div>
   </div>
+
+  <!-- ADMIN OVERLAY -->
+  <div id="adminOverlay" class="admin-overlay" onclick="if(event.target===this)closeAdmin()">
+
+    <!-- PIN Screen -->
+    <div class="admin-card" id="pinCard">
+      <button class="admin-close" onclick="closeAdmin()">✕</button>
+      <div class="admin-icon">🔐</div>
+      <div class="admin-title">Админ панел</div>
+      <div class="admin-subtitle">Въведете PIN за достъп</div>
+      <input type="password" id="pinInput" class="admin-input" placeholder="PIN код" maxlength="10"
+        onkeydown="if(event.key==='Enter')verifyPin()">
+      <div id="pinError" class="admin-error"></div>
+      <button class="admin-btn primary" onclick="verifyPin()">Вход</button>
+    </div>
+
+    <!-- Admin Content (hidden until PIN ok) -->
+    <div class="admin-card" id="adminCard" style="display:none">
+      <button class="admin-close" onclick="closeAdmin()">✕</button>
+      <div class="admin-title">⚙️ Админ панел</div>
+
+      <!-- Payment Section -->
+      <div class="admin-section">
+        <h3>💰 Добавяне на плащане</h3>
+
+        <label class="admin-label">Апартамент</label>
+        <select id="adminApt" class="admin-input"></select>
+
+        <label class="admin-label">Период (MM.YYYY)</label>
+        <input type="text" id="adminPeriod" class="admin-input" placeholder="03.2026">
+
+        <label class="admin-label">Сума</label>
+        <input type="number" id="adminAmount" class="admin-input" placeholder="0.00" step="0.01">
+
+        <button class="admin-btn primary" id="payBtn" onclick="submitPayment()">
+          Добави плащане
+        </button>
+      </div>
+
+      <div class="admin-divider"></div>
+
+      <!-- Email Section -->
+      <div class="admin-section">
+        <h3>✉️ Имейл на апартамент</h3>
+
+        <label class="admin-label">Апартамент</label>
+        <select id="adminEmailApt" class="admin-input" onchange="loadCurrentEmail()"></select>
+
+        <div id="currentEmailBox" class="admin-current" style="display:none">
+          Текущ имейл: <span id="currentEmail">—</span>
+        </div>
+
+        <label class="admin-label">Нов имейл</label>
+        <input type="email" id="adminEmail" class="admin-input" placeholder="email@example.com">
+
+        <button class="admin-btn secondary" id="emailBtn" onclick="submitEmail()">
+          Запази имейл
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast"></div>
 
   <h1>Етажна собственост</h1>
 
@@ -192,10 +465,7 @@
       <button class="btn blue">Изпрати съобщение</button>
     </a>
 
-    <a href="https://docs.google.com/spreadsheets/d/1W0Bw1DElo0IRz8INeEpDtWFiAbnFN7mE98lTlbSbkoo/edit?usp=drivesdk"
-      target="_blank">
-      <button class="btn green">€</button>
-    </a>
+    <button class="btn green" onclick="openAdmin()">€</button>
   </div>
 
   <select id="apartmentSelect">
@@ -232,19 +502,16 @@
     const loadingOverlay = document.getElementById("loadingOverlay");
 
     /* ===== LOADING HELPERS ===== */
-    function showLoading() {
-      loadingOverlay.classList.add("active");
-    }
-
-    function hideLoading() {
-      loadingOverlay.classList.remove("active");
-    }
+    function showLoading() { loadingOverlay.classList.add("active"); }
+    function hideLoading() { loadingOverlay.classList.remove("active"); }
 
     /* ===== ЗАРЕЖДА АПАРТАМЕНТИТЕ ===== */
-    async function loadApartments() {
+    let apartmentList = [];
 
+    async function loadApartments() {
       const res = await fetch(API_URL + "?list=apartments");
       const list = await res.json();
+      apartmentList = list;
 
       list.forEach(a => {
         const opt = document.createElement("option");
@@ -258,22 +525,18 @@
 
     /* ===== ПРИ ИЗБОР ===== */
     select.addEventListener("change", () => {
-      if (select.value) {
-        loadData(select.value);
-      }
+      if (select.value) loadData(select.value);
     });
 
     /* ===== ЗАРЕЖДА ДАННИ ===== */
     async function loadData(apartment) {
-
       showLoading();
-
       try {
         const res = await fetch(API_URL + "?apartment=" + apartment);
         const data = await res.json();
         render(data);
       } catch (err) {
-        tableBody.innerHTML = "<tr><td colspan='6' style='text-align:center;color:#c00;'>Грешка при зареждане. Опитайте отново.</td></tr>";
+        tableBody.innerHTML = "<tr><td colspan='6' style='text-align:center;color:#c00;'>Грешка при зареждане.</td></tr>";
         saldoEl.textContent = "-";
       } finally {
         hideLoading();
@@ -282,7 +545,6 @@
 
     /* ===== РЕНДЕР ===== */
     function render(data) {
-
       tableBody.innerHTML = "";
       const saldoVal = Number(data.saldo || 0);
       saldoEl.textContent = saldoVal.toFixed(2) + " €";
@@ -293,22 +555,206 @@
       else saldoCard.classList.add("saldo-zero");
 
       (data.periods || []).forEach((r, idx) => {
-
         const tr = document.createElement("tr");
         tr.classList.add("fade-in");
         tr.style.animationDelay = (idx * 0.04) + "s";
-
         tr.innerHTML = `
-      <td>${r.period}</td>
-      <td>${Number(r.elevator).toFixed(2)}</td>
-      <td>${Number(r.subscription).toFixed(2)}</td>
-      <td>${Number(r.light).toFixed(2)}</td>
-      <td>${Number(r.due).toFixed(2)}</td>
-      <td>${Number(r.paid).toFixed(2)}</td>
-    `;
-
+          <td>${r.period}</td>
+          <td>${Number(r.elevator).toFixed(2)}</td>
+          <td>${Number(r.subscription).toFixed(2)}</td>
+          <td>${Number(r.light).toFixed(2)}</td>
+          <td>${Number(r.due).toFixed(2)}</td>
+          <td>${Number(r.paid).toFixed(2)}</td>
+        `;
         tableBody.appendChild(tr);
       });
+    }
+
+    /* =============================================================
+       ADMIN PANEL
+       ============================================================= */
+    let adminPin = "";
+
+    function openAdmin() {
+      document.getElementById("adminOverlay").classList.add("active");
+      const saved = sessionStorage.getItem("adminPin");
+      if (saved) {
+        adminPin = saved;
+        showAdminContent();
+      } else {
+        document.getElementById("pinCard").style.display = "block";
+        document.getElementById("adminCard").style.display = "none";
+        document.getElementById("pinInput").value = "";
+        document.getElementById("pinError").textContent = "";
+        setTimeout(() => document.getElementById("pinInput").focus(), 100);
+      }
+    }
+
+    function closeAdmin() {
+      document.getElementById("adminOverlay").classList.remove("active");
+    }
+
+    async function verifyPin() {
+      const pin = document.getElementById("pinInput").value.trim();
+      if (!pin) return;
+
+      try {
+        const res = await fetch(API_URL + "?action=verifyPin&pin=" + encodeURIComponent(pin));
+        const data = await res.json();
+        if (data.success) {
+          adminPin = pin;
+          sessionStorage.setItem("adminPin", pin);
+          showAdminContent();
+        } else {
+          document.getElementById("pinError").textContent = "Грешен PIN код";
+        }
+      } catch (e) {
+        document.getElementById("pinError").textContent = "Грешка при връзка със сървъра";
+      }
+    }
+
+    function showAdminContent() {
+      document.getElementById("pinCard").style.display = "none";
+      document.getElementById("adminCard").style.display = "block";
+      populateAdminDropdowns();
+
+      // Pre-fill period with current month
+      const now = new Date();
+      const mm = String(now.getMonth() + 1).padStart(2, "0");
+      const yyyy = now.getFullYear();
+      document.getElementById("adminPeriod").value = mm + "." + yyyy;
+    }
+
+    function populateAdminDropdowns() {
+      const aptSel = document.getElementById("adminApt");
+      const emailSel = document.getElementById("adminEmailApt");
+
+      if (aptSel.options.length <= 1) {
+        aptSel.innerHTML = '<option value="">Избери апартамент</option>';
+        emailSel.innerHTML = '<option value="">Избери апартамент</option>';
+
+        apartmentList.forEach(a => {
+          const o1 = new Option(a, a);
+          const o2 = new Option(a, a);
+          aptSel.appendChild(o1);
+          emailSel.appendChild(o2);
+        });
+      }
+    }
+
+    /* --- PAYMENT --- */
+    async function submitPayment() {
+      const apt = document.getElementById("adminApt").value;
+      const period = document.getElementById("adminPeriod").value.trim();
+      const amount = document.getElementById("adminAmount").value.trim();
+
+      if (!apt || !period || !amount) {
+        showToast("Попълнете всички полета", "error");
+        return;
+      }
+
+      if (!/^\d{2}\.\d{4}$/.test(period)) {
+        showToast("Периодът трябва да е MM.YYYY", "error");
+        return;
+      }
+
+      const btn = document.getElementById("payBtn");
+      btn.disabled = true;
+      btn.textContent = "Записване...";
+
+      try {
+        const url = API_URL + "?action=addPayment&pin=" + encodeURIComponent(adminPin)
+          + "&apartment=" + encodeURIComponent(apt)
+          + "&period=" + encodeURIComponent(period)
+          + "&amount=" + encodeURIComponent(amount);
+
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (data.success) {
+          showToast("✅ Записано: " + apt + " → " + period + " → " + amount, "success");
+          document.getElementById("adminAmount").value = "";
+          // Refresh main table if same apartment selected
+          if (select.value === apt) loadData(apt);
+        } else {
+          showToast(data.error || "Грешка при записване", "error");
+        }
+      } catch (e) {
+        showToast("Грешка при връзка със сървъра", "error");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Добави плащане";
+      }
+    }
+
+    /* --- EMAIL --- */
+    async function loadCurrentEmail() {
+      const apt = document.getElementById("adminEmailApt").value;
+      const box = document.getElementById("currentEmailBox");
+      const span = document.getElementById("currentEmail");
+
+      if (!apt) { box.style.display = "none"; return; }
+
+      try {
+        const res = await fetch(API_URL + "?action=getEmail&apartment=" + encodeURIComponent(apt));
+        const data = await res.json();
+        if (data.email) {
+          span.textContent = data.email;
+          box.style.display = "block";
+        } else {
+          span.textContent = "не е зададен";
+          box.style.display = "block";
+        }
+      } catch (e) {
+        box.style.display = "none";
+      }
+    }
+
+    async function submitEmail() {
+      const apt = document.getElementById("adminEmailApt").value;
+      const email = document.getElementById("adminEmail").value.trim();
+
+      if (!apt || !email) {
+        showToast("Попълнете апартамент и имейл", "error");
+        return;
+      }
+
+      const btn = document.getElementById("emailBtn");
+      btn.disabled = true;
+      btn.textContent = "Записване...";
+
+      try {
+        const url = API_URL + "?action=addEmail&pin=" + encodeURIComponent(adminPin)
+          + "&apartment=" + encodeURIComponent(apt)
+          + "&email=" + encodeURIComponent(email);
+
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (data.success) {
+          showToast("✅ " + (data.updated ? "Имейлът е обновен" : "Имейлът е добавен"), "success");
+          document.getElementById("adminEmail").value = "";
+          loadCurrentEmail();
+        } else {
+          showToast(data.error || "Грешка при записване", "error");
+        }
+      } catch (e) {
+        showToast("Грешка при връзка със сървъра", "error");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Запази имейл";
+      }
+    }
+
+    /* --- TOAST --- */
+    let toastTimeout;
+    function showToast(msg, type) {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.className = "toast " + type;
+      clearTimeout(toastTimeout);
+      requestAnimationFrame(() => { t.classList.add("show"); });
+      toastTimeout = setTimeout(() => { t.classList.remove("show"); }, 3500);
     }
   </script>
 
