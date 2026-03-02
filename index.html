@@ -6,88 +6,138 @@
 <title>Етажна собственост</title>
 
 <style>
-body{font-family:Arial;margin:0;padding:14px;background:#f4f6f9;}
-h2{margin-bottom:15px;}
-select,input,button{width:100%;padding:8px;margin-bottom:8px;font-size:14px;}
-button{background:#2f6fe0;color:white;border:none;border-radius:6px;}
-table{width:100%;border-collapse:collapse;background:white;margin-top:15px;}
-th,td{padding:6px;border-bottom:1px solid #eee;text-align:center;}
-th{background:#f0f2f5;}
+body{
+  font-family:Arial;
+  margin:0;
+  padding:16px;
+  background:#f4f6f9;
+}
+
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:15px;
+}
+
+h2{
+  margin:0;
+}
+
+.euro-btn{
+  width:34px;
+  height:34px;
+  border:none;
+  border-radius:50%;
+  background:#2f6fe0;
+  color:white;
+  font-weight:bold;
+  font-size:16px;
+  cursor:pointer;
+}
+
+select{
+  width:100%;
+  padding:8px;
+  font-size:14px;
+  margin-bottom:12px;
+}
+
+.saldo{
+  font-size:16px;
+  font-weight:bold;
+  margin:10px 0;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  background:white;
+}
+
+th,td{
+  padding:6px;
+  border-bottom:1px solid #eee;
+  text-align:center;
+  font-size:13px;
+}
+
+th{
+  background:#f0f2f5;
+}
 </style>
 </head>
 
 <body>
 
-<h2>Етажна собственост</h2>
+<div class="header">
+  <h2>Етажна собственост</h2>
+  <button class="euro-btn"
+    onclick="window.open('https://docs.google.com/spreadsheets/d/1W0Bw1DElo0IRz8INeEpDtWFiAbnFN7mE98lTlbSbkoo/edit?usp=drivesdk','_blank')">
+    €
+  </button>
+</div>
 
 <select id="apartment" onchange="loadData()">
-<option value="">Избери апартамент</option>
-<option>A1</option><option>A2</option><option>A3</option>
-<option>A4</option><option>A5</option><option>A6</option>
-<option>A7</option><option>A8</option><option>A9</option>
-<option>A10</option><option>A11</option><option>A12</option>
-<option>A13</option><option>A14</option><option>A15</option>
+  <option value="">Избери апартамент</option>
+  <option>A1</option><option>A2</option><option>A3</option>
+  <option>A4</option><option>A5</option><option>A6</option>
+  <option>A7</option><option>A8</option><option>A9</option>
+  <option>A10</option><option>A11</option><option>A12</option>
+  <option>A13</option><option>A14</option><option>A15</option>
 </select>
 
-<div id="saldo"></div>
+<div class="saldo" id="saldoBox"></div>
 
 <table>
 <thead>
 <tr>
-<th>Период</th>
-<th>Асансьор</th>
-<th>Абонамент</th>
-<th>Осветление</th>
-<th>Дължимо</th>
-<th>Платено</th>
+  <th>Период</th>
+  <th>Асансьор</th>
+  <th>Абонамент</th>
+  <th>Осветление</th>
+  <th>Дължимо</th>
+  <th>Платено</th>
 </tr>
 </thead>
 <tbody id="tableBody"></tbody>
 </table>
-
-<h3>Добави плащане</h3>
-
-<select id="adminApartment">
-<option>A1</option><option>A2</option><option>A3</option>
-<option>A4</option><option>A5</option><option>A6</option>
-<option>A7</option><option>A8</option><option>A9</option>
-<option>A10</option><option>A11</option><option>A12</option>
-<option>A13</option><option>A14</option><option>A15</option>
-</select>
-
-<select id="adminPeriod"></select>
-
-<input type="number" id="adminAmount" step="0.01">
-
-<button onclick="addPayment()">Добави плащане</button>
 
 <script>
 
 const API_URL = "https://script.google.com/macros/s/AKfycbxtgsm4rySSzLxjpaTV79ERXkqPYMJG6h8LiGNsL2QF6tHwjmu_jwWeLES76hV1YRNY/exec";
 
 async function post(data){
-const res = await fetch(API_URL,{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify(data)
-});
-return await res.json();
+  const res = await fetch(API_URL,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(data)
+  });
+  return await res.json();
 }
 
 async function loadData(){
-const apt=document.getElementById("apartment").value;
-if(!apt)return;
 
-const data=await post({action:"getApartmentData",apartment:apt});
+  const apartment = document.getElementById("apartment").value;
+  if(!apartment){
+    document.getElementById("saldoBox").innerHTML="";
+    document.getElementById("tableBody").innerHTML="";
+    return;
+  }
 
-document.getElementById("saldo").innerHTML=
-"Текущо салдо: "+Number(data.saldo).toFixed(2)+" €";
+  const data = await post({
+    action:"getApartmentData",
+    apartment
+  });
 
-const tbody=document.getElementById("tableBody");
-tbody.innerHTML="";
+  document.getElementById("saldoBox").innerHTML =
+    "Текущо салдо: " + Number(data.saldo).toFixed(2) + " €";
 
-data.periods.forEach(r=>{
-tbody.innerHTML+=`
+  const tbody = document.getElementById("tableBody");
+  tbody.innerHTML="";
+
+  data.periods.forEach(r=>{
+    tbody.innerHTML+=`
 <tr>
 <td>${r.period}</td>
 <td>${r.elevator.toFixed(2)}</td>
@@ -96,30 +146,10 @@ tbody.innerHTML+=`
 <td>${r.due.toFixed(2)}</td>
 <td>${r.paid.toFixed(2)}</td>
 </tr>`;
-});
+  });
 }
-
-async function loadPeriods(){
-const periods=await post({action:"getPeriods"});
-const sel=document.getElementById("adminPeriod");
-sel.innerHTML="";
-periods.forEach(p=>{
-sel.innerHTML+=`<option>${p}</option>`;
-});
-}
-
-async function addPayment(){
-await post({
-action:"addPayment",
-apartment:document.getElementById("adminApartment").value,
-period:document.getElementById("adminPeriod").value,
-amount:document.getElementById("adminAmount").value
-});
-loadData();
-}
-
-loadPeriods();
 
 </script>
+
 </body>
 </html>
