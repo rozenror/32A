@@ -1,43 +1,56 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Етажна собственост</title>
 
 <style>
 body{
   font-family:Arial;
   margin:0;
-  padding:16px;
+  padding:14px;
   background:#f4f6f9;
 }
 
-h2{margin-bottom:15px;}
+h2{
+  margin:0 0 10px 0;
+  cursor:pointer;
+}
 
-select,button,input{
-  width:100%;
-  padding:12px;
-  margin-bottom:10px;
-  font-size:16px;
+.top-buttons{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+  margin-bottom:12px;
 }
 
 button{
-  background:#2f6fe0;
-  color:white;
+  padding:8px;
+  font-size:13px;
   border:none;
   border-radius:6px;
+  cursor:pointer;
+  background:#2f6fe0;
+  color:white;
 }
 
-.buttons{
-  display:flex;
-  flex-direction:column;
-  gap:8px;
+button:hover{
+  opacity:0.9;
+}
+
+select{
+  width:100%;
+  padding:9px;
+  font-size:14px;
+  margin-top:5px;
+  margin-bottom:12px;
 }
 
 .saldo{
-  font-size:20px;
-  margin:20px 0;
+  font-size:16px;
   font-weight:bold;
+  margin:15px 0 8px 0;
 }
 
 .table-wrapper{
@@ -52,178 +65,155 @@ table{
 }
 
 th,td{
-  padding:10px;
+  padding:7px;
   border-bottom:1px solid #eee;
   text-align:center;
+  font-size:13px;
 }
 
 th{
   background:#f0f2f5;
 }
 
-.hidden{display:none;}
-
 .admin-box{
-  margin-top:25px;
-  padding:15px;
+  margin-top:20px;
+  padding:12px;
   background:white;
   border-radius:8px;
+}
+
+.hidden{
+  display:none;
 }
 </style>
 </head>
 
 <body>
 
-<h2>Етажна собственост</h2>
+<h2 onclick="activateAdmin()">Етажна собственост</h2>
 
-<select id="apartmentSelect">
-<option value="">Избери апартамент</option>
-<option>A1</option><option>A2</option><option>A3</option>
-<option>A4</option><option>A5</option><option>A6</option>
-<option>A7</option><option>A8</option><option>A9</option>
-<option>A10</option><option>A11</option><option>A12</option>
-<option>A13</option><option>A14</option><option>A15</option>
-</select>
-
-<button onclick="loadData()">Покажи</button>
-
-<div class="buttons">
-<button onclick="window.open('https://drive.google.com/drive/folders/1VBoQBo5OLOA8TVnzgc_682yLxeqVCn5X','_blank')">Фактури</button>
-<button onclick="window.open('https://drive.google.com/drive/folders/1JIduP2g-OO1yWDDSl8xeft-Klvq6_HT5','_blank')">Абонамент</button>
-<button onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSeR2vQVxz1XH21QeUEz_iPYHDS7KaHrvpj8OgB-IFi2UVwUvA/viewform','_blank')">Изпрати съобщение</button>
-<button onclick="toggleAdmin()">Админ</button>
+<div class="top-buttons">
+  <button onclick="openInvoices()">Фактури</button>
+  <button onclick="openSubscription()">Абонамент</button>
+  <button onclick="openForm()">Изпрати съобщение</button>
 </div>
 
-<div class="saldo" id="saldo"></div>
+<select id="apartment" onchange="loadData()">
+  <option value="">Избери апартамент</option>
+  <option>A1</option><option>A2</option><option>A3</option>
+  <option>A4</option><option>A5</option><option>A6</option>
+  <option>A7</option><option>A8</option><option>A9</option>
+  <option>A10</option><option>A11</option><option>A12</option>
+  <option>A13</option><option>A14</option><option>A15</option>
+</select>
+
+<div class="saldo" id="saldoBox"></div>
 
 <div class="table-wrapper">
 <table>
 <thead>
 <tr>
-<th>Период</th>
-<th>Асансьор</th>
-<th>Абонамент</th>
-<th>Осветление</th>
-<th>Дължимо</th>
+  <th>Период</th>
+  <th>Асансьор</th>
+  <th>Абонамент</th>
+  <th>Осветление</th>
+  <th>Дължимо</th>
 </tr>
 </thead>
 <tbody id="tableBody"></tbody>
 </table>
 </div>
 
-<div class="admin-box hidden" id="adminBox">
+<!-- ADMIN PANEL -->
+<div id="adminPanel" class="admin-box hidden">
 <h3>Админ панел</h3>
 
-<select id="adminApt">
-<option>A1</option><option>A2</option><option>A3</option>
-<option>A4</option><option>A5</option><option>A6</option>
-<option>A7</option><option>A8</option><option>A9</option>
-<option>A10</option><option>A11</option><option>A12</option>
-<option>A13</option><option>A14</option><option>A15</option>
-</select>
-
-<input type="number" id="adminAmount" placeholder="Сума">
+<input type="text" id="adminApartment" placeholder="Апартамент (A1...)" style="width:100%;padding:8px;margin-bottom:6px;">
+<input type="text" id="adminPeriod" placeholder="Период (MM.YYYY)" style="width:100%;padding:8px;margin-bottom:6px;">
+<input type="number" id="adminAmount" placeholder="Сума" style="width:100%;padding:8px;margin-bottom:6px;">
 
 <button onclick="addPayment()">Добави плащане</button>
 </div>
 
 <script>
 
-const API_URL="https://script.google.com/macros/s/AKfycbxtgsm4rySSzLxjpaTV79ERXkqPYMJG6h8LiGNsL2QF6tHwjmu_jwWeLES76hV1YRNY/exec";
+/* Постави твоя EXEC URL */
+const API_URL = "Phttps://script.google.com/macros/s/AKfycbxtgsm4rySSzLxjpaTV79ERXkqPYMJG6h8LiGNsL2QF6tHwjmu_jwWeLES76hV1YRNY/exec";
 
-/***********************
- LOAD DATA (POST)
-***********************/
+/* ----- Бутони ----- */
+
+function openInvoices(){
+  window.open("https://drive.google.com/drive/folders/1VBoQBo5OLOA8TVnzgc_682yLxeqVCn5X?usp=sharing","_blank");
+}
+
+function openSubscription(){
+  window.open("https://drive.google.com/drive/folders/1JIduP2g-OO1yWDDSl8xeft-Klvq6_HT5?usp=drive_link","_blank");
+}
+
+function openForm(){
+  window.open("https://docs.google.com/forms/d/e/1FAIpQLSeR2vQVxz1XH21QeUEz_iPYHDS7KaHrvpj8OgB-IFi2UVwUvA/viewform","_blank");
+}
+
+/* ----- Автоматично зареждане ----- */
+
 async function loadData(){
+  const apartment = document.getElementById("apartment").value;
+  if(!apartment) return;
 
-  const apt=document.getElementById("apartmentSelect").value;
-  if(!apt) return;
-
-  const res=await fetch(API_URL,{
+  const response = await fetch(API_URL,{
     method:"POST",
-    headers:{
-      "Content-Type":"application/x-www-form-urlencoded"
-    },
-    body:new URLSearchParams({
-      action:"getApartment",
-      apartment:apt
+    body:JSON.stringify({
+      action:"getApartmentData",
+      apartment:apartment
     })
   });
 
-  const data=await res.json();
+  const data = await response.json();
 
-  document.getElementById("saldo").innerHTML=
-  "Текущо салдо: "+Number(data.saldo).toFixed(2)+" €";
+  document.getElementById("saldoBox").innerHTML =
+    "Текущо салдо: " + data.saldo + " €";
 
-  let html="";
-  data.rows.forEach(r=>{
-    html+="<tr>";
-    html+="<td>"+r.period+"</td>";
-    html+="<td>"+r.elevator+"</td>";
-    html+="<td>"+r.subscription+"</td>";
-    html+="<td>"+r.lighting+"</td>";
-    html+="<td>"+r.due+"</td>";
-    html+="</tr>";
+  const tbody = document.getElementById("tableBody");
+  tbody.innerHTML="";
+
+  data.periods.forEach(row=>{
+    tbody.innerHTML += `
+      <tr>
+        <td>${row.period}</td>
+        <td>${row.elevator}</td>
+        <td>${row.subscription}</td>
+        <td>${row.light}</td>
+        <td>${row.due}</td>
+      </tr>
+    `;
   });
-
-  document.getElementById("tableBody").innerHTML=html;
 }
 
-/***********************
- ADMIN CHECK
-***********************/
-async function toggleAdmin(){
+/* ----- Админ ----- */
 
-  const res=await fetch(API_URL,{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/x-www-form-urlencoded"
-    },
-    body:new URLSearchParams({
-      action:"checkAdmin"
-    })
-  });
-
-  const isAdmin=await res.json();
-
-  if(isAdmin){
-    document.getElementById("adminBox").classList.remove("hidden");
-  }else{
-    alert("Трябва да сте логнат с админ Google акаунта.");
-  }
+function activateAdmin(){
+  document.getElementById("adminPanel").classList.toggle("hidden");
 }
 
-/***********************
- ADD PAYMENT
-***********************/
 async function addPayment(){
+  const apartment = document.getElementById("adminApartment").value;
+  const period = document.getElementById("adminPeriod").value;
+  const amount = document.getElementById("adminAmount").value;
 
-  const apt=document.getElementById("adminApt").value;
-  const amount=document.getElementById("adminAmount").value;
-
-  const res=await fetch(API_URL,{
+  const response = await fetch(API_URL,{
     method:"POST",
-    headers:{
-      "Content-Type":"application/x-www-form-urlencoded"
-    },
-    body:new URLSearchParams({
+    body:JSON.stringify({
       action:"addPayment",
-      apartment:apt,
-      amount:amount
+      apartment,
+      period,
+      amount
     })
   });
 
-  const data=await res.json();
-
-  if(data.status==="OK"){
-    alert("Плащането е добавено");
-    loadData();
-  }else{
-    alert("Нямате права");
-  }
+  const result = await response.json();
+  alert(result.message);
 }
 
 </script>
-
 </body>
 </html>
