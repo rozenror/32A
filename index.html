@@ -7,72 +7,24 @@
 
 <style>
 body{font-family:Arial;margin:0;padding:14px;background:#f4f6f9;}
-h2{margin:0 0 10px 0;cursor:pointer;}
+h2{margin:0 0 12px 0;}
 
-.top-buttons{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:6px;
-  margin-bottom:12px;
-}
+button{padding:8px 10px;font-size:13px;border:none;border-radius:6px;
+background:#2f6fe0;color:white;cursor:pointer;}
 
-button{
-  padding:8px;
-  font-size:13px;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-  background:#2f6fe0;
-  color:white;
-}
+select,input{width:100%;padding:8px;font-size:14px;margin-bottom:8px;}
 
-select,input{
-  width:100%;
-  padding:8px;
-  font-size:14px;
-  margin-bottom:8px;
-}
+.saldo{font-size:16px;font-weight:bold;margin:12px 0;}
 
-.saldo{
-  font-size:16px;
-  font-weight:bold;
-  margin:15px 0 8px 0;
-}
-
-.table-wrapper{
-  overflow-x:auto;
-  background:white;
-  border-radius:8px;
-}
-
-table{width:100%;border-collapse:collapse;}
-th,td{
-  padding:7px;
-  border-bottom:1px solid #eee;
-  text-align:center;
-  font-size:13px;
-}
+table{width:100%;border-collapse:collapse;background:white;}
+th,td{padding:6px;border-bottom:1px solid #eee;text-align:center;font-size:13px;}
 th{background:#f0f2f5;}
-
-.admin-box{
-  margin-top:20px;
-  padding:12px;
-  background:white;
-  border-radius:8px;
-  display:none;
-}
 </style>
 </head>
 
 <body>
 
-<h2 onclick="adminLogin()">Етажна собственост</h2>
-
-<div class="top-buttons">
-  <button onclick="openInvoices()">Фактури</button>
-  <button onclick="openSubscription()">Абонамент</button>
-  <button onclick="openForm()">Изпрати съобщение</button>
-</div>
+<h2>Етажна собственост</h2>
 
 <select id="apartment" onchange="loadData()">
   <option value="">Избери апартамент</option>
@@ -85,7 +37,6 @@ th{background:#f0f2f5;}
 
 <div class="saldo" id="saldoBox"></div>
 
-<div class="table-wrapper">
 <table>
 <thead>
 <tr>
@@ -94,17 +45,16 @@ th{background:#f0f2f5;}
   <th>Абонамент</th>
   <th>Осветление</th>
   <th>Дължимо</th>
+  <th>Платено</th>
 </tr>
 </thead>
 <tbody id="tableBody"></tbody>
 </table>
-</div>
 
-<!-- ADMIN PANEL -->
-<div id="adminPanel" class="admin-box">
-<h3>Админ панел</h3>
+<hr>
 
-<label>Апартамент</label>
+<h3>Добави плащане</h3>
+
 <select id="adminApartment">
   <option>A1</option><option>A2</option><option>A3</option>
   <option>A4</option><option>A5</option><option>A6</option>
@@ -113,97 +63,61 @@ th{background:#f0f2f5;}
   <option>A13</option><option>A14</option><option>A15</option>
 </select>
 
-<label>Период</label>
 <select id="adminPeriod"></select>
 
-<label>Сума</label>
-<input type="number" id="adminAmount">
+<input type="number" id="adminAmount" step="0.01">
 
 <button onclick="addPayment()">Добави плащане</button>
-</div>
 
 <script>
 
 const API_URL = "https://script.google.com/macros/s/AKfycbxtgsm4rySSzLxjpaTV79ERXkqPYMJG6h8LiGNsL2QF6tHwjmu_jwWeLES76hV1YRNY/exec";
 
-/* ==== LOGIN ==== */
-
-function adminLogin(){
-  window.open(API_URL,"_blank");
-  setTimeout(()=>{
-    document.getElementById("adminPanel").style.display="block";
-    loadPeriods();
-  },1500);
+async function postJSON(payload){
+  const res = await fetch(API_URL,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(payload)
+  });
+  return await res.json();
 }
-
-/* ==== ЛИНКОВЕ ==== */
-
-function openInvoices(){
-  window.open("https://drive.google.com/drive/folders/1VBoQBo5OLOA8TVnzgc_682yLxeqVCn5X?usp=sharing","_blank");
-}
-
-function openSubscription(){
-  window.open("https://drive.google.com/drive/folders/1JIduP2g-OO1yWDDSl8xeft-Klvq6_HT5?usp=drive_link","_blank");
-}
-
-function openForm(){
-  window.open("https://docs.google.com/forms/d/e/1FAIpQLSeR2vQVxz1XH21QeUEz_iPYHDS7KaHrvpj8OgB-IFi2UVwUvA/viewform","_blank");
-}
-
-/* ==== ЗАРЕЖДАНЕ ДАННИ ==== */
 
 async function loadData(){
   const apartment = document.getElementById("apartment").value;
-  if(!apartment) return;
+  if(!apartment)return;
 
-  const response = await fetch(API_URL,{
-    method:"POST",
-    body:JSON.stringify({
-      action:"getApartmentData",
-      apartment
-    })
+  const data = await postJSON({
+    action:"getApartmentData",
+    apartment
   });
 
-  const data = await response.json();
-
   document.getElementById("saldoBox").innerHTML =
-    "Текущо салдо: " + data.saldo + " €";
+    "Текущо салдо: " + Number(data.saldo).toFixed(2) + " €";
 
   const tbody = document.getElementById("tableBody");
-  tbody.innerHTML="";
+  tbody.innerHTML = "";
 
   data.periods.forEach(row=>{
     tbody.innerHTML += `
-      <tr>
-        <td>${row.period}</td>
-        <td>${row.elevator}</td>
-        <td>${row.subscription}</td>
-        <td>${row.light}</td>
-        <td>${row.due}</td>
-      </tr>
-    `;
+<tr>
+<td>${row.period}</td>
+<td>${row.elevator.toFixed(2)}</td>
+<td>${row.subscription.toFixed(2)}</td>
+<td>${row.light.toFixed(2)}</td>
+<td>${row.due.toFixed(2)}</td>
+<td>${row.paid.toFixed(2)}</td>
+</tr>`;
   });
 }
-
-/* ==== ЗАРЕЖДА ПЕРИОДИТЕ ==== */
 
 async function loadPeriods(){
-  const response = await fetch(API_URL,{
-    method:"POST",
-    body:JSON.stringify({action:"getPeriods"})
-  });
-
-  const periods = await response.json();
-
+  const periods = await postJSON({action:"getPeriods"});
   const select = document.getElementById("adminPeriod");
   select.innerHTML="";
-
   periods.forEach(p=>{
-    select.innerHTML += `<option>${p}</option>`;
+    select.innerHTML+=`<option>${p}</option>`;
   });
 }
-
-/* ==== ДОБАВЯ ПЛАЩАНЕ ==== */
 
 async function addPayment(){
 
@@ -211,19 +125,18 @@ async function addPayment(){
   const period = document.getElementById("adminPeriod").value;
   const amount = document.getElementById("adminAmount").value;
 
-  const response = await fetch(API_URL,{
-    method:"POST",
-    body:JSON.stringify({
-      action:"addPayment",
-      apartment,
-      period,
-      amount
-    })
+  const result = await postJSON({
+    action:"addPayment",
+    apartment,
+    period,
+    amount
   });
 
-  const result = await response.json();
   alert(result.message);
+  loadData();
 }
+
+loadPeriods();
 
 </script>
 </body>
