@@ -5,66 +5,66 @@
 <title>Етажна собственост</title>
 
 <style>
-body {
-  font-family: Arial, sans-serif;
-  margin:0;
-  padding:16px;
-  background:#f4f6f9;
+body{font-family:Arial;margin:0;padding:16px;background:#f4f6f9;}
+h2{margin-bottom:10px;}
+
+.topbar{
+display:flex;
+flex-direction:column;
+gap:10px;
 }
 
-h2 { margin-bottom:10px; }
-
-.controls {
-  display:flex;
-  flex-direction:column;
-  gap:10px;
+select,button,input{
+padding:12px;
+font-size:16px;
 }
 
-select, button, input {
-  padding:12px;
-  font-size:16px;
+button{
+background:#2f6fe0;
+color:white;
+border:none;
+border-radius:6px;
 }
 
-button {
-  background:#2f6fe0;
-  color:white;
-  border:none;
-  border-radius:6px;
+.buttons{
+display:flex;
+flex-wrap:wrap;
+gap:10px;
 }
 
-.saldo {
-  font-size:20px;
-  margin:20px 0;
-  font-weight:bold;
+.saldo{
+font-size:20px;
+margin:20px 0;
+font-weight:bold;
 }
 
-.table-wrapper {
-  overflow-x:auto;
-  background:white;
-  border-radius:8px;
+.table-wrapper{
+overflow-x:auto;
+background:white;
+border-radius:8px;
 }
 
-table {
-  width:100%;
-  border-collapse:collapse;
+table{
+width:100%;
+border-collapse:collapse;
 }
 
-th,td {
-  padding:10px;
-  border-bottom:1px solid #eee;
-  text-align:center;
+th,td{
+padding:10px;
+border-bottom:1px solid #eee;
+text-align:center;
 }
 
-th { background:#f0f2f5; }
+th{background:#f0f2f5;}
 
-.admin-box {
-  margin-top:30px;
-  padding:15px;
-  background:white;
-  border-radius:8px;
+.hidden{display:none;}
+
+.admin-box{
+margin-top:30px;
+padding:15px;
+background:white;
+border-radius:8px;
 }
-
-.hidden { display:none; }
 </style>
 </head>
 
@@ -72,20 +72,34 @@ th { background:#f0f2f5; }
 
 <h2>Етажна собственост</h2>
 
-<div class="controls">
+<div class="topbar">
 
 <select id="apartmentSelect">
-  <option value="">Избери апартамент</option>
-  <option>A1</option><option>A2</option><option>A3</option>
-  <option>A4</option><option>A5</option><option>A6</option>
-  <option>A7</option><option>A8</option><option>A9</option>
-  <option>A10</option><option>A11</option><option>A12</option>
-  <option>A13</option><option>A14</option><option>A15</option>
+<option value="">Избери апартамент</option>
+<option>A1</option><option>A2</option><option>A3</option>
+<option>A4</option><option>A5</option><option>A6</option>
+<option>A7</option><option>A8</option><option>A9</option>
+<option>A10</option><option>A11</option><option>A12</option>
+<option>A13</option><option>A14</option><option>A15</option>
 </select>
 
+<div class="buttons">
 <button onclick="loadData()">Покажи</button>
 
+<button onclick="window.open('https://drive.google.com/drive/folders/1VBoQBo5OLOA8TVnzgc_682yLxeqVCn5X','_blank')">
+Фактури
+</button>
+
+<button onclick="window.open('https://drive.google.com/drive/folders/1JIduP2g-OO1yWDDSl8xeft-Klvq6_HT5','_blank')">
+Абонамент
+</button>
+
+<button onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSeR2vQVxz1XH21QeUEz_iPYHDS7KaHrvpj8OgB-IFi2UVwUvA/viewform','_blank')">
+Изпрати съобщение
+</button>
+
 <button onclick="toggleAdmin()">Админ</button>
+</div>
 
 </div>
 
@@ -109,8 +123,6 @@ th { background:#f0f2f5; }
 <div class="admin-box hidden" id="adminBox">
 <h3>Админ панел</h3>
 
-<div id="adminStatus"></div>
-
 <select id="adminApt">
 <option>A1</option><option>A2</option><option>A3</option>
 <option>A4</option><option>A5</option><option>A6</option>
@@ -127,71 +139,64 @@ th { background:#f0f2f5; }
 
 <script>
 
-const API_URL = "ТУК_СЛОЖИ_ТВОЯ_EXEC_URL";
+const API_URL="ТУК_СЛОЖИ_EXEC_URL";
 
-/***********************
- LOAD DATA
-***********************/
+/******** LOAD ********/
 async function loadData(){
 
-  const apt = document.getElementById("apartmentSelect").value;
-  if(!apt) return;
+const apt=document.getElementById("apartmentSelect").value;
+if(!apt) return;
 
-  const res = await fetch(API_URL + "?action=getApartment&apartment=" + apt);
-  const data = await res.json();
+const res=await fetch(API_URL+"?action=getApartment&apartment="+apt);
+const data=await res.json();
 
-  document.getElementById("saldo").innerHTML =
-    "Текущо салдо: " + Number(data.saldo).toFixed(2) + " €";
+document.getElementById("saldo").innerHTML=
+"Текущо салдо: "+Number(data.saldo).toFixed(2)+" €";
 
-  let html = "";
+let html="";
+data.rows.forEach(r=>{
+html+="<tr>";
+html+="<td>"+r.period+"</td>";
+html+="<td>"+r.elevator+"</td>";
+html+="<td>"+r.subscription+"</td>";
+html+="<td>"+r.lighting+"</td>";
+html+="<td>"+r.due+"</td>";
+html+="</tr>";
+});
 
-  data.rows.forEach(r=>{
-    html += "<tr>";
-    html += "<td>"+r.period+"</td>";
-    html += "<td>"+r.elevator+"</td>";
-    html += "<td>"+r.subscription+"</td>";
-    html += "<td>"+r.lighting+"</td>";
-    html += "<td>"+r.due+"</td>";
-    html += "</tr>";
-  });
-
-  document.getElementById("tableBody").innerHTML = html;
+document.getElementById("tableBody").innerHTML=html;
 }
 
-/***********************
- ADMIN
-***********************/
+/******** ADMIN ********/
 async function toggleAdmin(){
 
-  const res = await fetch(API_URL + "?action=checkAdmin");
-  const isAdmin = await res.json();
+const res=await fetch(API_URL+"?action=checkAdmin");
+const isAdmin=await res.json();
 
-  if(isAdmin){
-    document.getElementById("adminBox").classList.remove("hidden");
-    document.getElementById("adminStatus").innerHTML =
-      "<b>Админ режим активен</b>";
-  } else {
-    alert("Трябва да сте логнат с админ Google акаунта.");
-  }
+if(isAdmin){
+document.getElementById("adminBox").classList.remove("hidden");
+}else{
+alert("Не сте логнат с админ Google акаунта.");
+}
 }
 
 async function addPayment(){
 
-  const apt = document.getElementById("adminApt").value;
-  const amount = document.getElementById("adminAmount").value;
+const apt=document.getElementById("adminApt").value;
+const amount=document.getElementById("adminAmount").value;
 
-  const res = await fetch(API_URL +
-    "?action=addPayment&apartment=" + apt +
-    "&amount=" + amount);
+const res=await fetch(API_URL+
+"?action=addPayment&apartment="+apt+
+"&amount="+amount);
 
-  const data = await res.json();
+const data=await res.json();
 
-  if(data.status === "OK"){
-    alert("Плащането е добавено");
-    loadData();
-  } else {
-    alert("Нямате права");
-  }
+if(data.status==="OK"){
+alert("Плащането е добавено");
+loadData();
+}else{
+alert("Нямате права");
+}
 }
 
 </script>
