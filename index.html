@@ -1,253 +1,304 @@
 <!DOCTYPE html>
 <html lang="bg">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Етажна собственост</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Етажна собственост</title>
 
-<style>
-body{
-  font-family: Arial, sans-serif;
-  background:#f2f4f8;
-  margin:0;
-  padding:20px;
-}
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f4f8;
+      margin: 0;
+      padding: 20px;
+    }
 
-h1{
-  margin-bottom:15px;
-}
+    h1 {
+      margin-bottom: 15px;
+    }
 
-.top-buttons{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-bottom:15px;
-}
+    .top-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+    }
 
-.btn{
-  padding:8px 14px;
-  font-size:14px;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-  color:white;
-}
+    .btn {
+      padding: 8px 14px;
+      font-size: 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: white;
+    }
 
-.blue{ background:#3b6edc; }
-.green{ background:#2e9e4f; }
+    .blue {
+      background: #3b6edc;
+    }
 
-select{
-  width:100%;
-  padding:10px;
-  font-size:16px;
-  border-radius:6px;
-  margin-bottom:20px;
-}
+    .green {
+      background: #2e9e4f;
+    }
 
-.card{
-  background:white;
-  padding:15px;
-  border-radius:8px;
-  box-shadow:0 2px 8px rgba(0,0,0,0.08);
-  margin-bottom:20px;
-}
+    select {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+    }
 
-table{
-  width:100%;
-  border-collapse:collapse;
-}
+    .card {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      margin-bottom: 20px;
+    }
 
-th{
-  text-align:left;
-  padding:10px;
-  background:#f0f2f6;
-}
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
 
-td{
-  padding:10px;
-  border-top:1px solid #eee;
-}
+    th {
+      text-align: left;
+      padding: 10px;
+      background: #f0f2f6;
+    }
 
-.saldo{
-  font-size:20px;
-  font-weight:bold;
-}
+    td {
+      padding: 10px;
+      border-top: 1px solid #eee;
+    }
 
-/* ===== LOADING OVERLAY ===== */
-#loadingOverlay{
-  display:none;
-  position:fixed;
-  top:0; left:0; right:0; bottom:0;
-  background:rgba(242,244,248,0.85);
-  z-index:100;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
-  gap:16px;
-}
+    .saldo {
+      font-size: 20px;
+      font-weight: bold;
+    }
 
-#loadingOverlay.active{
-  display:flex;
-}
+    .saldo-card {
+      transition: background 0.4s ease;
+    }
 
-.spinner{
-  width:48px;
-  height:48px;
-  border:4px solid #e0e4ec;
-  border-top:4px solid #3b6edc;
-  border-radius:50%;
-  animation: spin 0.8s linear infinite;
-}
+    .saldo-positive {
+      background: #fde8e8;
+    }
 
-@keyframes spin{
-  to{ transform:rotate(360deg); }
-}
+    .saldo-negative {
+      background: #e6f9ec;
+    }
 
-.loading-text{
-  font-size:15px;
-  color:#555;
-  font-weight:500;
-  animation: pulse 1.5s ease-in-out infinite;
-}
+    .saldo-zero {
+      background: white;
+    }
 
-@keyframes pulse{
-  0%, 100%{ opacity:1; }
-  50%{ opacity:0.4; }
-}
+    /* ===== LOADING OVERLAY ===== */
+    #loadingOverlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(242, 244, 248, 0.85);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      gap: 16px;
+    }
 
-/* ===== FADE IN ===== */
-.fade-in{
-  animation: fadeIn 0.35s ease-out;
-}
+    #loadingOverlay.active {
+      display: flex;
+    }
 
-@keyframes fadeIn{
-  from{ opacity:0; transform:translateY(6px); }
-  to{ opacity:1; transform:translateY(0); }
-}
-</style>
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid #e0e4ec;
+      border-top: 4px solid #3b6edc;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loading-text {
+      font-size: 15px;
+      color: #555;
+      font-weight: 500;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.4;
+      }
+    }
+
+    /* ===== FADE IN ===== */
+    .fade-in {
+      animation: fadeIn 0.35s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<!-- LOADING OVERLAY -->
-<div id="loadingOverlay">
-  <div class="spinner"></div>
-  <div class="loading-text">Зареждане на данни...</div>
-</div>
+  <!-- LOADING OVERLAY -->
+  <div id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-text">Зареждане на данни...</div>
+  </div>
 
-<h1>Етажна собственост</h1>
+  <h1>Етажна собственост</h1>
 
-<div class="top-buttons">
-  <a href="https://drive.google.com/drive/folders/1VBoQBo5OLOA8TVnzgc_682yLxeqVCn5X?usp=sharing" target="_blank">
-    <button class="btn blue">Фактури</button>
-  </a>
+  <div class="top-buttons">
+    <a href="https://drive.google.com/drive/folders/1VBoQBo5OLOA8TVnzgc_682yLxeqVCn5X?usp=sharing" target="_blank">
+      <button class="btn blue">Фактури</button>
+    </a>
 
-  <a href="https://drive.google.com/drive/folders/1JIduP2g-OO1yWDDSl8xeft-Klvq6_HT5?usp=drive_link" target="_blank">
-    <button class="btn blue">Абонамент</button>
-  </a>
+    <a href="https://drive.google.com/drive/folders/1JIduP2g-OO1yWDDSl8xeft-Klvq6_HT5?usp=drive_link" target="_blank">
+      <button class="btn blue">Абонамент</button>
+    </a>
 
-  <a href="https://docs.google.com/forms/d/e/1FAIpQLSeR2vQVxz1XH21QeUEz_iPYHDS7KaHrvpj8OgB-IFi2UVwUvA/viewform" target="_blank">
-    <button class="btn blue">Изпрати съобщение</button>
-  </a>
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSeR2vQVxz1XH21QeUEz_iPYHDS7KaHrvpj8OgB-IFi2UVwUvA/viewform"
+      target="_blank">
+      <button class="btn blue">Изпрати съобщение</button>
+    </a>
 
-  <a href="https://docs.google.com/spreadsheets/d/1W0Bw1DElo0IRz8INeEpDtWFiAbnFN7mE98lTlbSbkoo/edit?usp=drivesdk" target="_blank">
-    <button class="btn green">€</button>
-  </a>
-</div>
+    <a href="https://docs.google.com/spreadsheets/d/1W0Bw1DElo0IRz8INeEpDtWFiAbnFN7mE98lTlbSbkoo/edit?usp=drivesdk"
+      target="_blank">
+      <button class="btn green">€</button>
+    </a>
+  </div>
 
-<select id="apartmentSelect">
-  <option value="">Избери апартамент</option>
-</select>
+  <select id="apartmentSelect">
+    <option value="">Избери апартамент</option>
+  </select>
 
-<div class="card">
-  <div class="saldo">Текущо салдо: <span id="saldo">-</span></div>
-</div>
+  <div class="card saldo-card" id="saldoCard">
+    <div class="saldo">Текущо салдо: <span id="saldo">-</span></div>
+  </div>
 
-<div class="card">
-  <table>
-    <thead>
-      <tr>
-        <th>Период</th>
-        <th>Асансьор</th>
-        <th>Абонамент</th>
-        <th>Осветление</th>
-        <th>Дължимо</th>
-        <th>Платено</th>
-      </tr>
-    </thead>
-    <tbody id="tableBody"></tbody>
-  </table>
-</div>
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>Период</th>
+          <th>Асансьор</th>
+          <th>Абонамент</th>
+          <th>Осветление</th>
+          <th>Дължимо</th>
+          <th>Платено</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
 
-<script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxtgsm4rySSzLxjpaTV79ERXkqPYMJG6h8LiGNsL2QF6tHwjmu_jwWeLES76hV1YRNY/exec";
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbxtgsm4rySSzLxjpaTV79ERXkqPYMJG6h8LiGNsL2QF6tHwjmu_jwWeLES76hV1YRNY/exec";
 
-const select = document.getElementById("apartmentSelect");
-const saldoEl = document.getElementById("saldo");
-const tableBody = document.getElementById("tableBody");
-const loadingOverlay = document.getElementById("loadingOverlay");
+    const select = document.getElementById("apartmentSelect");
+    const saldoEl = document.getElementById("saldo");
+    const saldoCard = document.getElementById("saldoCard");
+    const tableBody = document.getElementById("tableBody");
+    const loadingOverlay = document.getElementById("loadingOverlay");
 
-/* ===== LOADING HELPERS ===== */
-function showLoading(){
-  loadingOverlay.classList.add("active");
-}
+    /* ===== LOADING HELPERS ===== */
+    function showLoading() {
+      loadingOverlay.classList.add("active");
+    }
 
-function hideLoading(){
-  loadingOverlay.classList.remove("active");
-}
+    function hideLoading() {
+      loadingOverlay.classList.remove("active");
+    }
 
-/* ===== ЗАРЕЖДА АПАРТАМЕНТИТЕ ===== */
-async function loadApartments(){
+    /* ===== ЗАРЕЖДА АПАРТАМЕНТИТЕ ===== */
+    async function loadApartments() {
 
-  const res = await fetch(API_URL + "?list=apartments");
-  const list = await res.json();
+      const res = await fetch(API_URL + "?list=apartments");
+      const list = await res.json();
 
-  list.forEach(a=>{
-    const opt = document.createElement("option");
-    opt.value = a;
-    opt.textContent = a;
-    select.appendChild(opt);
-  });
-}
+      list.forEach(a => {
+        const opt = document.createElement("option");
+        opt.value = a;
+        opt.textContent = a;
+        select.appendChild(opt);
+      });
+    }
 
-loadApartments();
+    loadApartments();
 
-/* ===== ПРИ ИЗБОР ===== */
-select.addEventListener("change", ()=>{
-  if(select.value){
-    loadData(select.value);
-  }
-});
+    /* ===== ПРИ ИЗБОР ===== */
+    select.addEventListener("change", () => {
+      if (select.value) {
+        loadData(select.value);
+      }
+    });
 
-/* ===== ЗАРЕЖДА ДАННИ ===== */
-async function loadData(apartment){
+    /* ===== ЗАРЕЖДА ДАННИ ===== */
+    async function loadData(apartment) {
 
-  showLoading();
+      showLoading();
 
-  try{
-    const res = await fetch(API_URL + "?apartment=" + apartment);
-    const data = await res.json();
-    render(data);
-  } catch(err){
-    tableBody.innerHTML = "<tr><td colspan='6' style='text-align:center;color:#c00;'>Грешка при зареждане. Опитайте отново.</td></tr>";
-    saldoEl.textContent = "-";
-  } finally{
-    hideLoading();
-  }
-}
+      try {
+        const res = await fetch(API_URL + "?apartment=" + apartment);
+        const data = await res.json();
+        render(data);
+      } catch (err) {
+        tableBody.innerHTML = "<tr><td colspan='6' style='text-align:center;color:#c00;'>Грешка при зареждане. Опитайте отново.</td></tr>";
+        saldoEl.textContent = "-";
+      } finally {
+        hideLoading();
+      }
+    }
 
-/* ===== РЕНДЕР ===== */
-function render(data){
+    /* ===== РЕНДЕР ===== */
+    function render(data) {
 
-  tableBody.innerHTML = "";
-  saldoEl.textContent = Number(data.saldo || 0).toFixed(2) + " €";
+      tableBody.innerHTML = "";
+      const saldoVal = Number(data.saldo || 0);
+      saldoEl.textContent = saldoVal.toFixed(2) + " €";
 
-  (data.periods || []).forEach((r, idx)=>{
+      saldoCard.classList.remove("saldo-positive", "saldo-negative", "saldo-zero");
+      if (saldoVal > 0) saldoCard.classList.add("saldo-positive");
+      else if (saldoVal < 0) saldoCard.classList.add("saldo-negative");
+      else saldoCard.classList.add("saldo-zero");
 
-    const tr = document.createElement("tr");
-    tr.classList.add("fade-in");
-    tr.style.animationDelay = (idx * 0.04) + "s";
+      (data.periods || []).forEach((r, idx) => {
 
-    tr.innerHTML = `
+        const tr = document.createElement("tr");
+        tr.classList.add("fade-in");
+        tr.style.animationDelay = (idx * 0.04) + "s";
+
+        tr.innerHTML = `
       <td>${r.period}</td>
       <td>${Number(r.elevator).toFixed(2)}</td>
       <td>${Number(r.subscription).toFixed(2)}</td>
@@ -256,10 +307,11 @@ function render(data){
       <td>${Number(r.paid).toFixed(2)}</td>
     `;
 
-    tableBody.appendChild(tr);
-  });
-}
-</script>
+        tableBody.appendChild(tr);
+      });
+    }
+  </script>
 
 </body>
+
 </html>
