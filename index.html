@@ -6,17 +6,8 @@
 <title>Етажна собственост</title>
 
 <style>
-body{
-  font-family:Arial;
-  margin:0;
-  padding:14px;
-  background:#f4f6f9;
-}
-
-h2{
-  margin:0 0 10px 0;
-  cursor:pointer;
-}
+body{font-family:Arial;margin:0;padding:14px;background:#f4f6f9;}
+h2{margin:0 0 10px 0;cursor:pointer;}
 
 .top-buttons{
   display:grid;
@@ -35,16 +26,11 @@ button{
   color:white;
 }
 
-button:hover{
-  opacity:0.9;
-}
-
-select{
+select,input{
   width:100%;
-  padding:9px;
+  padding:8px;
   font-size:14px;
-  margin-top:5px;
-  margin-bottom:12px;
+  margin-bottom:8px;
 }
 
 .saldo{
@@ -59,30 +45,20 @@ select{
   border-radius:8px;
 }
 
-table{
-  width:100%;
-  border-collapse:collapse;
-}
-
+table{width:100%;border-collapse:collapse;}
 th,td{
   padding:7px;
   border-bottom:1px solid #eee;
   text-align:center;
   font-size:13px;
 }
-
-th{
-  background:#f0f2f5;
-}
+th{background:#f0f2f5;}
 
 .admin-box{
   margin-top:20px;
   padding:12px;
   background:white;
   border-radius:8px;
-}
-
-.hidden{
   display:none;
 }
 </style>
@@ -90,7 +66,7 @@ th{
 
 <body>
 
-<h2 onclick="activateAdmin()">Етажна собственост</h2>
+<h2 onclick="adminLogin()">Етажна собственост</h2>
 
 <div class="top-buttons">
   <button onclick="openInvoices()">Фактури</button>
@@ -125,22 +101,42 @@ th{
 </div>
 
 <!-- ADMIN PANEL -->
-<div id="adminPanel" class="admin-box hidden">
+<div id="adminPanel" class="admin-box">
 <h3>Админ панел</h3>
 
-<input type="text" id="adminApartment" placeholder="Апартамент (A1...)" style="width:100%;padding:8px;margin-bottom:6px;">
-<input type="text" id="adminPeriod" placeholder="Период (MM.YYYY)" style="width:100%;padding:8px;margin-bottom:6px;">
-<input type="number" id="adminAmount" placeholder="Сума" style="width:100%;padding:8px;margin-bottom:6px;">
+<label>Апартамент</label>
+<select id="adminApartment">
+  <option>A1</option><option>A2</option><option>A3</option>
+  <option>A4</option><option>A5</option><option>A6</option>
+  <option>A7</option><option>A8</option><option>A9</option>
+  <option>A10</option><option>A11</option><option>A12</option>
+  <option>A13</option><option>A14</option><option>A15</option>
+</select>
+
+<label>Период</label>
+<select id="adminPeriod"></select>
+
+<label>Сума</label>
+<input type="number" id="adminAmount">
 
 <button onclick="addPayment()">Добави плащане</button>
 </div>
 
 <script>
 
-/* Постави твоя EXEC URL */
 const API_URL = "https://script.google.com/macros/s/AKfycbxtgsm4rySSzLxjpaTV79ERXkqPYMJG6h8LiGNsL2QF6tHwjmu_jwWeLES76hV1YRNY/exec";
 
-/* ----- Бутони ----- */
+/* ==== LOGIN ==== */
+
+function adminLogin(){
+  window.open(API_URL,"_blank");
+  setTimeout(()=>{
+    document.getElementById("adminPanel").style.display="block";
+    loadPeriods();
+  },1500);
+}
+
+/* ==== ЛИНКОВЕ ==== */
 
 function openInvoices(){
   window.open("https://drive.google.com/drive/folders/1VBoQBo5OLOA8TVnzgc_682yLxeqVCn5X?usp=sharing","_blank");
@@ -154,7 +150,7 @@ function openForm(){
   window.open("https://docs.google.com/forms/d/e/1FAIpQLSeR2vQVxz1XH21QeUEz_iPYHDS7KaHrvpj8OgB-IFi2UVwUvA/viewform","_blank");
 }
 
-/* ----- Автоматично зареждане ----- */
+/* ==== ЗАРЕЖДАНЕ ДАННИ ==== */
 
 async function loadData(){
   const apartment = document.getElementById("apartment").value;
@@ -164,7 +160,7 @@ async function loadData(){
     method:"POST",
     body:JSON.stringify({
       action:"getApartmentData",
-      apartment:apartment
+      apartment
     })
   });
 
@@ -189,13 +185,28 @@ async function loadData(){
   });
 }
 
-/* ----- Админ ----- */
+/* ==== ЗАРЕЖДА ПЕРИОДИТЕ ==== */
 
-function activateAdmin(){
-  document.getElementById("adminPanel").classList.toggle("hidden");
+async function loadPeriods(){
+  const response = await fetch(API_URL,{
+    method:"POST",
+    body:JSON.stringify({action:"getPeriods"})
+  });
+
+  const periods = await response.json();
+
+  const select = document.getElementById("adminPeriod");
+  select.innerHTML="";
+
+  periods.forEach(p=>{
+    select.innerHTML += `<option>${p}</option>`;
+  });
 }
 
+/* ==== ДОБАВЯ ПЛАЩАНЕ ==== */
+
 async function addPayment(){
+
   const apartment = document.getElementById("adminApartment").value;
   const period = document.getElementById("adminPeriod").value;
   const amount = document.getElementById("adminAmount").value;
