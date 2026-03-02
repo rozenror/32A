@@ -360,7 +360,9 @@
       z-index: 300;
       transition: bottom 0.35s ease;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
-      white-space: nowrap;
+      max-width: 90vw;
+      text-align: center;
+      word-wrap: break-word;
     }
 
     .toast.show {
@@ -373,6 +375,73 @@
 
     .toast.error {
       background: #d32f2f;
+    }
+
+    .toast.warning {
+      background: #e67e22;
+    }
+
+    /* ===== MOBILE ===== */
+    @media (max-width: 480px) {
+      body {
+        padding: 12px;
+      }
+
+      h1 {
+        font-size: 20px;
+      }
+
+      .admin-overlay {
+        padding: 10px;
+        align-items: flex-start;
+        padding-top: 20px;
+      }
+
+      .admin-card {
+        padding: 20px 16px;
+        max-width: 100%;
+        max-height: 85vh;
+        border-radius: 12px;
+      }
+
+      .admin-title {
+        font-size: 19px;
+      }
+
+      .admin-input {
+        padding: 12px;
+        font-size: 16px;
+        /* prevents iOS zoom on focus */
+      }
+
+      .admin-btn {
+        padding: 14px;
+        font-size: 16px;
+      }
+
+      .admin-section h3 {
+        font-size: 15px;
+      }
+
+      .admin-label {
+        font-size: 12px;
+      }
+
+      th,
+      td {
+        padding: 6px 4px;
+        font-size: 13px;
+      }
+
+      .saldo {
+        font-size: 17px;
+      }
+
+      .toast {
+        font-size: 13px;
+        padding: 10px 16px;
+        max-width: 92vw;
+      }
     }
   </style>
 </head>
@@ -672,9 +741,12 @@
         const data = await res.json();
 
         if (data.success) {
-          showToast("✅ Записано: " + apt + " → " + period + " → " + amount, "success");
+          if (data.emailError) {
+            showToast("✅ Записано, но имейлът не е изпратен", "warning");
+          } else {
+            showToast("✅ Записано: " + apt + " → " + period + " → " + amount, "success");
+          }
           document.getElementById("adminAmount").value = "";
-          // Refresh main table if same apartment selected
           if (select.value === apt) loadData(apt);
         } else {
           showToast(data.error || "Грешка при записване", "error");
