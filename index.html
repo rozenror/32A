@@ -42,6 +42,16 @@
       background: #2e9e4f;
     }
 
+    .grey {
+      background: #7a818e;
+    }
+
+    .icon-btn {
+      padding: 8px 10px;
+      font-size: 16px;
+      line-height: 1;
+    }
+
     select {
       width: 100%;
       padding: 10px;
@@ -556,7 +566,7 @@
 
   <div class="top-buttons">
     <a href="https://drive.google.com/drive/folders/1VBoQBo5OLOA8TVnzgc_682yLxeqVCn5X?usp=sharing" target="_blank">
-      <button class="btn blue">Фактури</button>
+      <button class="btn blue">Ф-ри ел.</button>
     </a>
 
     <a href="https://drive.google.com/drive/folders/1JIduP2g-OO1yWDDSl8xeft-Klvq6_HT5?usp=drive_link" target="_blank">
@@ -565,10 +575,10 @@
 
     <a href="https://docs.google.com/forms/d/e/1FAIpQLSeR2vQVxz1XH21QeUEz_iPYHDS7KaHrvpj8OgB-IFi2UVwUvA/viewform"
       target="_blank">
-      <button class="btn blue">Изпрати съобщение</button>
+      <button class="btn blue icon-btn" title="Изпрати съобщение">✉️</button>
     </a>
 
-    <button class="btn green" onclick="openAdmin()">€</button>
+    <button class="btn grey icon-btn" onclick="openAdmin()" title="Админ панел">⚙️</button>
   </div>
 
   <select id="apartmentSelect">
