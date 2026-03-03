@@ -40,7 +40,12 @@
       letter-spacing: 0.3px;
     }
 
-    .gear-btn {
+    .header-icons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .header-icon-btn {
       background: rgba(255, 255, 255, 0.15);
       border: none;
       color: white;
@@ -55,7 +60,7 @@
       transition: background 0.2s;
     }
 
-    .gear-btn:hover {
+    .header-icon-btn:hover {
       background: rgba(255, 255, 255, 0.25);
     }
 
@@ -490,7 +495,7 @@
         font-size: 22px;
       }
 
-      .gear-btn {
+      .header-icon-btn {
         font-size: 18px;
         width: 34px;
         height: 34px;
@@ -665,7 +670,13 @@
 
   <div class="header-row">
     <h1>Етажна собственост</h1>
-    <button class="gear-btn" onclick="openAdmin()" title="Админ панел">⚙️</button>
+    <div class="header-icons">
+      <button class="header-icon-btn" onclick="openAdmin()" title="Админ панел">⚙️</button>
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSeR2vQVxz1XH21QeUEz_iPYHDS7KaHrvpj8OgB-IFi2UVwUvA/viewform"
+        target="_blank" style="text-decoration:none;">
+        <button class="header-icon-btn" title="Изпрати съобщение">✉️</button>
+      </a>
+    </div>
   </div>
 
   <div class="content-area">
@@ -676,11 +687,6 @@
 
       <a href="https://drive.google.com/drive/folders/1JIduP2g-OO1yWDDSl8xeft-Klvq6_HT5?usp=drive_link" target="_blank">
         <button class="btn blue">Абонамент</button>
-      </a>
-
-      <a href="https://docs.google.com/forms/d/e/1FAIpQLSeR2vQVxz1XH21QeUEz_iPYHDS7KaHrvpj8OgB-IFi2UVwUvA/viewform"
-        target="_blank">
-        <button class="btn blue icon-btn" title="Изпрати съобщение">✉️</button>
       </a>
     </div>
 
