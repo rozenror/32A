@@ -18,6 +18,36 @@
       margin-bottom: 15px;
     }
 
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+
+    .header-row h1 {
+      margin: 0;
+    }
+
+    .gear-btn {
+      background: #7a818e;
+      border: none;
+      color: white;
+      font-size: 20px;
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .gear-btn:hover {
+      background: #5f656f;
+    }
+
     .top-buttons {
       display: flex;
       gap: 10px;
@@ -407,7 +437,13 @@
       }
 
       h1 {
-        font-size: 20px;
+        font-size: 22px;
+      }
+
+      .gear-btn {
+        font-size: 18px;
+        width: 34px;
+        height: 34px;
       }
 
       .admin-overlay {
@@ -449,11 +485,16 @@
       th,
       td {
         padding: 6px 4px;
-        font-size: 13px;
+        font-size: 14px;
       }
 
       .saldo {
-        font-size: 17px;
+        font-size: 18px;
+      }
+
+      .btn {
+        font-size: 15px;
+        padding: 9px 12px;
       }
 
       .toast {
@@ -572,7 +613,10 @@
   <!-- TOAST -->
   <div id="toast" class="toast"></div>
 
-  <h1>Етажна собственост</h1>
+  <div class="header-row">
+    <h1>Етажна собственост</h1>
+    <button class="gear-btn" onclick="openAdmin()" title="Админ панел">⚙️</button>
+  </div>
 
   <div class="top-buttons">
     <a href="https://drive.google.com/drive/folders/1VBoQBo5OLOA8TVnzgc_682yLxeqVCn5X?usp=sharing" target="_blank">
@@ -587,8 +631,6 @@
       target="_blank">
       <button class="btn blue icon-btn" title="Изпрати съобщение">✉️</button>
     </a>
-
-    <button class="btn grey icon-btn" onclick="openAdmin()" title="Админ панел">⚙️</button>
   </div>
 
   <select id="apartmentSelect">
