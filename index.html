@@ -3,13 +3,17 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
   <title>Етажна собственост</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: 'Inter', Arial, sans-serif;
       background: #eef1f6;
@@ -147,6 +151,13 @@
     table {
       width: 100%;
       border-collapse: collapse;
+      min-width: 500px;
+    }
+
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     th {
@@ -699,19 +710,21 @@
     </div>
 
     <div class="card">
-      <table>
-        <thead>
-          <tr>
-            <th>Период</th>
-            <th>Асансьор</th>
-            <th>Абонамент</th>
-            <th>Осветление</th>
-            <th>Дължимо</th>
-            <th>Платено</th>
-          </tr>
-        </thead>
-        <tbody id="tableBody"></tbody>
-      </table>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Период</th>
+              <th>Асансьор</th>
+              <th>Абонамент</th>
+              <th>Осветление</th>
+              <th>Дължимо</th>
+              <th>Платено</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
