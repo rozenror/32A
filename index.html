@@ -307,6 +307,15 @@
       background: #258a42;
     }
 
+    .admin-btn.orange {
+      background: #e67e22;
+      color: white;
+    }
+
+    .admin-btn.orange:hover {
+      background: #cf6d17;
+    }
+
     .admin-btn:disabled {
       opacity: 0.6;
       cursor: not-allowed;
@@ -489,6 +498,31 @@
 
         <button class="admin-btn primary" id="payBtn" onclick="submitPayment()">
           Добави плащане
+        </button>
+      </div>
+
+      <div class="admin-divider"></div>
+
+      <!-- Charges Section -->
+      <div class="admin-section">
+        <h3>📋 Начисления (Асансьор / Абонамент / Осветление)</h3>
+
+        <label class="admin-label">Период (MM.YYYY)</label>
+        <input type="text" id="chargesPeriod" class="admin-input" placeholder="03.2026">
+
+        <label class="admin-label">Асансьор</label>
+        <input type="number" id="chargesElevator" class="admin-input" placeholder="оставете празно ако няма"
+          step="0.01">
+
+        <label class="admin-label">Абонамент</label>
+        <input type="number" id="chargesSubscription" class="admin-input" placeholder="оставете празно ако няма"
+          step="0.01">
+
+        <label class="admin-label">Осветление</label>
+        <input type="number" id="chargesLight" class="admin-input" placeholder="оставете празно ако няма" step="0.01">
+
+        <button class="admin-btn orange" id="chargesBtn" onclick="submitCharges()">
+          Запиши начисления
         </button>
       </div>
 
@@ -692,6 +726,7 @@
       const mm = String(now.getMonth() + 1).padStart(2, "0");
       const yyyy = now.getFullYear();
       document.getElementById("adminPeriod").value = mm + "." + yyyy;
+      document.getElementById("chargesPeriod").value = mm + "." + yyyy;
     }
 
     function populateAdminDropdowns() {
@@ -815,6 +850,60 @@
       } finally {
         btn.disabled = false;
         btn.textContent = "Запази имейл";
+      }
+    }
+
+    /* --- CHARGES --- */
+    async function submitCharges() {
+      const period = document.getElementById("chargesPeriod").value.trim();
+      const elevator = document.getElementById("chargesElevator").value.trim();
+      const subscription = document.getElementById("chargesSubscription").value.trim();
+      const light = document.getElementById("chargesLight").value.trim();
+
+      if (!period) {
+        showToast("Въведете период", "error");
+        return;
+      }
+
+      if (!/^\d{2}\.\d{4}$/.test(period)) {
+        showToast("Периодът трябва да е MM.YYYY", "error");
+        return;
+      }
+
+      if (!elevator && !subscription && !light) {
+        showToast("Въведете поне една сума", "error");
+        return;
+      }
+
+      const btn = document.getElementById("chargesBtn");
+      btn.disabled = true;
+      btn.textContent = "Записване...";
+
+      try {
+        let url = API_URL + "?action=addCharges&pin=" + encodeURIComponent(adminPin)
+          + "&period=" + encodeURIComponent(period);
+        if (elevator) url += "&elevator=" + encodeURIComponent(elevator);
+        if (subscription) url += "&subscription=" + encodeURIComponent(subscription);
+        if (light) url += "&light=" + encodeURIComponent(light);
+
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (data.success) {
+          showToast("✅ " + data.message, data.hasSkipped ? "warning" : "success");
+          document.getElementById("chargesElevator").value = "";
+          document.getElementById("chargesSubscription").value = "";
+          document.getElementById("chargesLight").value = "";
+        } else if (data.message && data.hasSkipped) {
+          showToast(data.message, "warning");
+        } else {
+          showToast(data.error || "Грешка при записване", "error");
+        }
+      } catch (e) {
+        showToast("Грешка при връзка със сървъра", "error");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Запиши начисления";
       }
     }
 
