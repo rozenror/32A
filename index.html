@@ -556,6 +556,16 @@
           Запази имейл
         </button>
       </div>
+
+      <div class="admin-divider"></div>
+
+      <!-- MASTER Link -->
+      <a href="https://docs.google.com/spreadsheets/d/1lPVIF_Hj4eTEoatc9dT0TOhaSwX7wknCqOU84vOGt78/edit?gid=769791497#gid=769791497"
+        target="_blank" style="text-decoration:none;">
+        <button class="admin-btn primary" style="background:#555;" type="button">
+          📊 MASTER
+        </button>
+      </a>
     </div>
   </div>
 
@@ -687,6 +697,23 @@
        ADMIN PANEL
        ============================================================= */
     let adminPin = "";
+    const MAX_ATTEMPTS = 3;
+    const LOCKOUT_MS = 5 * 60 * 1000; // 5 минути
+
+    function isLockedOut() {
+      const lockUntil = Number(sessionStorage.getItem("pinLockUntil") || 0);
+      if (lockUntil && Date.now() < lockUntil) {
+        const secs = Math.ceil((lockUntil - Date.now()) / 1000);
+        const mins = Math.floor(secs / 60);
+        const s = secs % 60;
+        return mins + ":" + String(s).padStart(2, "0");
+      }
+      if (lockUntil) {
+        sessionStorage.removeItem("pinLockUntil");
+        sessionStorage.removeItem("pinAttempts");
+      }
+      return false;
+    }
 
     function openAdmin() {
       document.getElementById("adminOverlay").classList.add("active");
@@ -698,8 +725,15 @@
         document.getElementById("pinCard").style.display = "block";
         document.getElementById("adminCard").style.display = "none";
         document.getElementById("pinInput").value = "";
-        document.getElementById("pinError").textContent = "";
-        setTimeout(() => document.getElementById("pinInput").focus(), 100);
+        const remaining = isLockedOut();
+        if (remaining) {
+          document.getElementById("pinError").textContent = "Блокиран. Опитайте след " + remaining;
+          document.getElementById("pinInput").disabled = true;
+        } else {
+          document.getElementById("pinError").textContent = "";
+          document.getElementById("pinInput").disabled = false;
+          setTimeout(() => document.getElementById("pinInput").focus(), 100);
+        }
       }
     }
 
@@ -708,6 +742,12 @@
     }
 
     async function verifyPin() {
+      const remaining = isLockedOut();
+      if (remaining) {
+        document.getElementById("pinError").textContent = "Блокиран. Опитайте след " + remaining;
+        return;
+      }
+
       const pin = document.getElementById("pinInput").value.trim();
       if (!pin) return;
 
@@ -717,9 +757,21 @@
         if (data.success) {
           adminPin = pin;
           sessionStorage.setItem("adminPin", pin);
+          sessionStorage.removeItem("pinAttempts");
+          sessionStorage.removeItem("pinLockUntil");
           showAdminContent();
         } else {
-          document.getElementById("pinError").textContent = "Грешен PIN код";
+          let attempts = Number(sessionStorage.getItem("pinAttempts") || 0) + 1;
+          sessionStorage.setItem("pinAttempts", attempts);
+
+          if (attempts >= MAX_ATTEMPTS) {
+            sessionStorage.setItem("pinLockUntil", Date.now() + LOCKOUT_MS);
+            document.getElementById("pinError").textContent = "3 грешни опита. Блокиран за 5 минути.";
+            document.getElementById("pinInput").disabled = true;
+          } else {
+            document.getElementById("pinError").textContent =
+              "Грешен PIN (" + attempts + "/" + MAX_ATTEMPTS + ")";
+          }
         }
       } catch (e) {
         document.getElementById("pinError").textContent = "Грешка при връзка със сървъра";
