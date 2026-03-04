@@ -433,6 +433,25 @@
       margin: 24px 0;
     }
 
+    .master-tab {
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1.5px solid #c0c6d4;
+      border-radius: 16px;
+      background: white;
+      color: #555;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Inter', Arial, sans-serif;
+    }
+
+    .master-tab.active {
+      background: #1a1a2e;
+      color: white;
+      border-color: #1a1a2e;
+    }
+
     .admin-section h3 {
       font-size: 16px;
       margin: 0 0 4px 0;
@@ -666,13 +685,92 @@
 
       <div class="admin-divider"></div>
 
-      <!-- MASTER Link -->
-      <a href="https://docs.google.com/spreadsheets/d/1lPVIF_Hj4eTEoatc9dT0TOhaSwX7wknCqOU84vOGt78/edit?gid=769791497#gid=769791497"
-        target="_blank" style="text-decoration:none;">
-        <button class="admin-btn primary" style="background:#555;" type="button">
-          📊 MASTER
-        </button>
-      </a>
+      <!-- MASTER Section -->
+      <div class="admin-section">
+        <h3>📊 MASTER – Настройки</h3>
+
+        <!-- Sub-tabs -->
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 14px;">
+          <button class="master-tab active" onclick="switchMasterTab('logika',this)">Логика</button>
+          <button class="master-tab" onclick="switchMasterTab('uchastie',this)">Участие</button>
+          <button class="master-tab" onclick="switchMasterTab('osv',this)">Осв.Уч.</button>
+          <button class="master-tab" onclick="switchMasterTab('obitatel',this)">Обитатели</button>
+          <button class="master-tab" onclick="switchMasterTab('chipove',this)">Чипове</button>
+        </div>
+
+        <!-- Логика -->
+        <div id="master-tab-logika" class="master-panel">
+          <label class="admin-label">Логика</label>
+          <select id="masterLogikaVal" class="admin-input">
+            <option value="Равно">Равно</option>
+            <option value="Обитатели">Обитатели</option>
+            <option value="Чипове">Чипове</option>
+          </select>
+          <label class="admin-label">От период (MM.YYYY)</label>
+          <input type="text" id="masterLogikaFrom" class="admin-input" placeholder="01.2026">
+          <label class="admin-label">До период (MM.YYYY)</label>
+          <input type="text" id="masterLogikaTo" class="admin-input" placeholder="12.2026">
+          <button class="admin-btn primary" onclick="submitMaster('Логика')">Запиши</button>
+        </div>
+
+        <!-- УЧАСТИЕ -->
+        <div id="master-tab-uchastie" class="master-panel" style="display:none">
+          <label class="admin-label">Апартамент</label>
+          <select id="masterUchApt" class="admin-input"></select>
+          <label class="admin-label">Участва</label>
+          <select id="masterUchVal" class="admin-input">
+            <option value="true">✅ Да (TRUE)</option>
+            <option value="false">☐ Не (FALSE)</option>
+          </select>
+          <label class="admin-label">От период</label>
+          <input type="text" id="masterUchFrom" class="admin-input" placeholder="01.2026">
+          <label class="admin-label">До период</label>
+          <input type="text" id="masterUchTo" class="admin-input" placeholder="12.2026">
+          <button class="admin-btn primary" onclick="submitMaster('УЧАСТИЕ')">Запиши</button>
+        </div>
+
+        <!-- ОСВЕТЛЕНИЕ_УЧАСТИЕ -->
+        <div id="master-tab-osv" class="master-panel" style="display:none">
+          <label class="admin-label">Апартамент</label>
+          <select id="masterOsvApt" class="admin-input"></select>
+          <label class="admin-label">Участва (осветление)</label>
+          <select id="masterOsvVal" class="admin-input">
+            <option value="true">✅ Да (TRUE)</option>
+            <option value="false">☐ Не (FALSE)</option>
+          </select>
+          <label class="admin-label">От период</label>
+          <input type="text" id="masterOsvFrom" class="admin-input" placeholder="01.2026">
+          <label class="admin-label">До период</label>
+          <input type="text" id="masterOsvTo" class="admin-input" placeholder="12.2026">
+          <button class="admin-btn primary" onclick="submitMaster('ОСВЕТЛЕНИЕ_УЧАСТИЕ')">Запиши</button>
+        </div>
+
+        <!-- ОБИТАТЕЛИ -->
+        <div id="master-tab-obitatel" class="master-panel" style="display:none">
+          <label class="admin-label">Апартамент</label>
+          <select id="masterObApt" class="admin-input"></select>
+          <label class="admin-label">Брой обитатели</label>
+          <input type="number" id="masterObVal" class="admin-input" placeholder="1" min="0" step="1">
+          <label class="admin-label">От период</label>
+          <input type="text" id="masterObFrom" class="admin-input" placeholder="01.2026">
+          <label class="admin-label">До период</label>
+          <input type="text" id="masterObTo" class="admin-input" placeholder="12.2026">
+          <button class="admin-btn primary" onclick="submitMaster('ОБИТАТЕЛИ')">Запиши</button>
+        </div>
+
+        <!-- ЧИПОВЕ -->
+        <div id="master-tab-chipove" class="master-panel" style="display:none">
+          <label class="admin-label">Апартамент</label>
+          <select id="masterChApt" class="admin-input"></select>
+          <label class="admin-label">Брой чипове</label>
+          <input type="number" id="masterChVal" class="admin-input" placeholder="0" min="0" step="1">
+          <label class="admin-label">От период</label>
+          <input type="text" id="masterChFrom" class="admin-input" placeholder="01.2026">
+          <label class="admin-label">До период</label>
+          <input type="text" id="masterChTo" class="admin-input" placeholder="12.2026">
+          <button class="admin-btn primary" onclick="submitMaster('ЧИПОВЕ')">Запиши</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -918,6 +1016,77 @@
           aptSel.appendChild(o1);
           emailSel.appendChild(o2);
         });
+      }
+
+      // Populate master section selects
+      ["masterUchApt", "masterOsvApt", "masterObApt", "masterChApt"].forEach(id => {
+        const sel = document.getElementById(id);
+        if (sel && sel.options.length === 0) {
+          apartmentList.forEach(a => sel.appendChild(new Option(a, a)));
+        }
+      });
+    }
+
+    function switchMasterTab(tab, btn) {
+      document.querySelectorAll(".master-panel").forEach(p => p.style.display = "none");
+      document.querySelectorAll(".master-tab").forEach(b => b.classList.remove("active"));
+      document.getElementById("master-tab-" + tab).style.display = "block";
+      btn.classList.add("active");
+    }
+
+    async function submitMaster(sheet) {
+      let fromPeriod, toPeriod, value, apartment = null;
+
+      if (sheet === "Логика") {
+        value = document.getElementById("masterLogikaVal").value;
+        fromPeriod = document.getElementById("masterLogikaFrom").value.trim();
+        toPeriod = document.getElementById("masterLogikaTo").value.trim();
+      } else if (sheet === "УЧАСТИЕ") {
+        apartment = document.getElementById("masterUchApt").value;
+        value = document.getElementById("masterUchVal").value;
+        fromPeriod = document.getElementById("masterUchFrom").value.trim();
+        toPeriod = document.getElementById("masterUchTo").value.trim();
+      } else if (sheet === "ОСВЕТЛЕНИЕ_УЧАСТИЕ") {
+        apartment = document.getElementById("masterOsvApt").value;
+        value = document.getElementById("masterOsvVal").value;
+        fromPeriod = document.getElementById("masterOsvFrom").value.trim();
+        toPeriod = document.getElementById("masterOsvTo").value.trim();
+      } else if (sheet === "ОБИТАТЕЛИ") {
+        apartment = document.getElementById("masterObApt").value;
+        value = document.getElementById("masterObVal").value.trim();
+        fromPeriod = document.getElementById("masterObFrom").value.trim();
+        toPeriod = document.getElementById("masterObTo").value.trim();
+      } else if (sheet === "ЧИПОВЕ") {
+        apartment = document.getElementById("masterChApt").value;
+        value = document.getElementById("masterChVal").value.trim();
+        fromPeriod = document.getElementById("masterChFrom").value.trim();
+        toPeriod = document.getElementById("masterChTo").value.trim();
+      }
+
+      if (!fromPeriod || !toPeriod || value === "" || value === undefined) {
+        showToast("Попълнете всички полета", "error"); return;
+      }
+      if (!/^\d{2}\.\d{4}$/.test(fromPeriod) || !/^\d{2}\.\d{4}$/.test(toPeriod)) {
+        showToast("Форматът на периода трябва да е MM.YYYY", "error"); return;
+      }
+
+      try {
+        let url = API_URL + "?action=updateMaster&pin=" + encodeURIComponent(adminPin)
+          + "&sheet=" + encodeURIComponent(sheet)
+          + "&fromPeriod=" + encodeURIComponent(fromPeriod)
+          + "&toPeriod=" + encodeURIComponent(toPeriod)
+          + "&value=" + encodeURIComponent(value);
+        if (apartment) url += "&apartment=" + encodeURIComponent(apartment);
+
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.success) {
+          showToast("✅ " + data.message, "success");
+        } else {
+          showToast("❌ " + (data.error || "Грешка"), "error");
+        }
+      } catch (e) {
+        showToast("Грешка при връзка", "error");
       }
     }
 
